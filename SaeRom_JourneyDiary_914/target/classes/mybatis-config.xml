@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="journey.diary.test.VO.User" alias="User"/>
+		<typeAlias type="journey.diary.test.VO.Album" alias="Album"/>
+		<typeAlias type="journey.diary.test.VO.Photo" alias="Photo"/>
+		<typeAlias type="journey.diary.test.VO.PhotoPager" alias="PhotoPager"/>
+		<!-- 임시 VO추가 -->
+		<typeAlias type="journey.diary.test.VO.Uploadimage" alias="Uploadimage"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="Mappers/userMapper.xml"/>
+		<mapper resource="Mappers/albumMapper.xml"/>
+		<mapper resource="Mappers/photoMapper.xml"/>
+	</mappers>
+</configuration>

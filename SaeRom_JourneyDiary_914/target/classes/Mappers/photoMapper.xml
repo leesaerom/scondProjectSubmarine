@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="journey.diary.test.DAO.PhotoMapper">
+
+	<select id="selectOnePhoto" parameterType="int" resultType="Photo">
+		SELECT 
+			photono,
+			albumno,
+			userno,
+			privacy,
+			photoimg,
+			photocontent,
+			landmark,
+			hashtag,
+			TO_CHAR(dateoftravel, 'YYYY-MM-DD') dateoftravel,
+			photoregdate,
+		<!-- 왜?<if test="lat != null"> -->
+			lat,
+			lng,
+		<!-- </if> -->
+			userno,
+			hitcount,
+			likecount
+		FROM photo
+		WHERE photono=#{photono}
+	</select>
+	
+	
+	<insert id="photoUpload" parameterType="Photo">
+		INSERT INTO PHOTO
+		(
+				photono,
+				albumno,
+				userno,
+				privacy,
+				photoimg,
+				photocontent,
+			<if test="keyword != null">	
+				keyword,
+			</if>
+				landmark,
+				hashtag,
+				dateoftravel,
+				photoregdate,
+			<if test="lat != null">
+				lat,
+				lng,
+			</if>
+				hitcount,
+				likecount
+		)
+		VALUES
+		(
+				photoseq.nextVal,
+				#{albumno},
+				#{userno},
+				#{privacy},
+				#{photoimg},
+				#{photocontent},
+			<if test="keyword != null">	
+				#{keyword},
+			</if>
+				#{landmark},
+				#{hashtag},
+				#{dateoftravel},
+				sysdate,
+			<if test="lat != null">
+				#{lat},
+				#{lng},
+			</if>
+				0,
+				0
+		)		
+	</insert>
+	
+	<!-- 임시 업로드 -->
+	<insert id="uploadimg" parameterType="Uploadimage">
+		INSERT INTO uploadimg
+		VALUES(
+			imgseq.nextVal,
+			#{originalfilename},
+			#{savedfilename}
+		)
+	</insert>
+	
+	<update id="alterPhoto" parameterType="Photo">
+		UPDATE PHOTO SET
+			privacy = #{privacy},
+			photoimg = #{photoimg},
+			photocontent = #{photocontent},
+			landmark = #{landmark},
+			hashtag = #{hashtag},
+			dateoftravel = #{dateoftravel},
+			lat = #{lat},
+			lng = #{lng}
+		WHERE
+			photono = #{photono} and userno = #{userno} and albumno = #{albumno}
+	</update>
+	
+	<!-- 삭제기능 -->
+	<delete id="deletePhoto" parameterType="_int">
+		DELETE FROM PHOTO
+		WHERE photono = #{photono}
+			
+	
+	</delete>
+	
+	<!-- 베스트포토 메인(carousel) -->
+	
+	<select id="getBestPHotos" parameterType="int" resultType="Photo">
+		SELECT * FROM photo
+		WHERE albumno = #{albumno}
+	</select>
+	
+	<select id="getAlbumPhoto" parameterType="int" resultType="Photo">
+		SELECT photono, albumno, privacy, photoimg, photocontent, keyword, TO_CHAR(dateoftravel, 'YYYY-MM-DD') dateoftravel, lat, lng, userno
+		FROM photo
+		WHERE albumno = #{value}	
+		ORDER BY photono
+	</select>
+	
+	<select id="listAll" parameterType="int" resultType="Photo">
+		SELECT 
+			photono
+			, albumno
+			, privacy
+			, photoimg
+			, photocontent
+			, TO_CHAR(dateoftravel, 'YYYY-MM-DD') dateoftravel
+			, lat
+			, lng
+			, userno
+			, landmark
+			, hashtag
+			, hitcount
+			, likecount
+		FROM photo
+	</select>
+	
+	<select id="getPhotoList" parameterType="int" resultType="Photo">
+		SELECT 
+			photono
+			, albumno
+			, privacy
+			, photoimg
+			, photocontent
+			, TO_CHAR(dateoftravel, 'YYYY-MM-DD') dateoftravel
+			, lat
+			, lng
+			, userno
+			, landmark
+			, hashtag
+			, hitcount
+			, likecount
+		FROM photo
+		WHERE 
+			photono > 0
+		<if test = "landmark != null">
+		WHERE
+		title like '%' || #{landmark} || '%'		
+		</if> 
+		ORDER BY photono desc
+		<!-- limit #{pageStart}, #{perPageNum} -->
+	</select>
+	
+	<select id="getTotalCount" resultType="int" parameterType="Photo">
+		SELECT
+			count(*)
+		FROM
+			Photo
+		<if test = "landmark != null">
+		WHERE
+		title like '%' || #{landmark} || '%'		
+		</if>
+		<!-- <if test = "privacy != '비공개'">
+		</if> -->
+	</select>
+	
+	<!-- hitcount -->
+	<update id="hitCount" parameterType="_int">
+		UPDATE PHOTO SET
+			hitcount = hitcount + 1
+		WHERE photono = #{photono}
+	
+	</update>
+	<!-- likecount -->
+	<update id="likeCount" parameterType="_int">
+		UPDATE PHOTO SET
+			likecount = likecount + 1
+		WHERE photono = #{photono}
+	
+	</update>
+	
+	<select id="getBestPhotos" resultType="Photo">
+		SELECT * FROM 
+		<![CDATA[(SELECT * FROM photo WHERE albumno = 10 ORDER BY likecount DESC) WHERE ROWNUM < 7]]>
+	</select>
+	
+	<select id="getPhotoListTwo" parameterType="int" resultType="Photo">
+		SELECT 
+			photono
+			, albumno
+			, privacy
+			, photoimg
+			, photocontent
+			, TO_CHAR(dateoftravel, 'YYYY-MM-DD') dateoftravel
+			, lat
+			, lng
+			, userno
+			, landmark
+			, hashtag
+			, hitcount
+			, likecount
+		FROM 
+			photo	
+		WHERE 
+			albumno = #{albumno}
+		ORDER BY 
+			photono
+	</select>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="journey.diary.test.DAO.AlbumMapper">
+
+	<insert id="createAlbum" parameterType="Album">
+		INSERT INTO ALBUM VALUES
+		(
+			albumseq.nextVal,
+			#{userno},
+			#{albumtitle},
+			#{albumintro},
+			#{privacy},
+			#{albumimg},
+			#{startdate},
+			#{enddate},
+			sysdate		
+		)
+	</insert>
+	
+	<select id="getAlbum" parameterType="Album" resultType="Album">
+		SELECT albumno, albumtitle, albumintro, privacy, albumimg, TO_CHAR(startdate, 'YYYY-MM-DD') startdate, TO_CHAR(enddate, 'YYYY-MM-DD') enddate, userno, TO_CHAR(albumregdate, 'YYYY-MM-DD') albumregdate
+		FROM album
+		WHERE userno = #{userno} and albumno = #{albumno}
+	</select>
+
+	<select id="getAlbumList" parameterType="int" resultType="Album">
+		SELECT albumno, albumtitle, albumintro, privacy, albumimg, TO_CHAR(startdate, 'YYYY-MM-DD') startdate, TO_CHAR(enddate, 'YYYY-MM-DD') enddate, userno, TO_CHAR(albumregdate, 'YYYY-MM-DD') albumregdate
+		FROM album
+		WHERE userno = #{userno}
+	</select>
+	
+	<update id="alterAlbum" parameterType="Album">
+		UPDATE album SET 
+		
+			albumtitle = #{albumtitle},
+			albumintro = #{albumintro}, 
+			privacy = #{privacy}, 
+			albumimg = #{albumimg}, 
+			startdate = #{startdate},
+			enddate = #{enddate}
+		where albumno = #{albumno} and userno = #{userno}
+	
+	</update>
+	
+	<delete id="deleteAlbum" parameterType="int">
+		delete from album
+		where albumno = #{albumno}
+	</delete>
+	
+	
+	
+	<select id="getPhotoList" parameterType="int" resultType="Photo">
+		SELECT photono, albumno, privacy, photoimg, photocontent, keyword, TO_CHAR(dateoftravel, 'YYYY-MM-DD') dateoftravel, lat, lng, userno, landmark
+		FROM photo	
+		WHERE albumno = #{albumno}
+		ORDER BY photono
+	</select>
+
+</mapper>
